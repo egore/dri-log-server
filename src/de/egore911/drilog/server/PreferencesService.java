@@ -17,24 +17,81 @@ import javax.persistence.EntityManager;
 @Api(name = "preferences")
 public class PreferencesService {
 
-    public List<Monitored> getMonitored() {
+    private static EntityManager getEntityManager() {
+        return EntityManagerFactoryHolder.getInstance().createEntityManager();
+    }
+
+    private static boolean isLoggedIn(User user) {
+        return user != null && user.getEmail() != null && !user.getEmail().isEmpty();
+    }
+
+    private static User getCurrentUser() {
         UserService userService = UserServiceFactory.getUserService();
-        User user = userService.getCurrentUser();
-        if (user != null && user.getEmail() != null && !user.getEmail().isEmpty()) {
-            EntityManager em = EntityManagerFactoryHolder.getInstance().createEntityManager();
+        return userService.getCurrentUser();
+    }
+
+    public List<Monitored> getMonitoreds() {
+        User user = getCurrentUser();
+        if (isLoggedIn(user)) {
+            EntityManager em = getEntityManager();
             try {
                 @SuppressWarnings("unchecked")
                 List<Monitored> result = em
-                        .createQuery("from Monitored where by = :by " +
+                        .createQuery("select from Monitored where by = :by " +
                                 "order by username")
                         .setParameter("by", user.getEmail())
                         .getResultList();
+                // XXX Lazy init workaround
+                for (Monitored m : result) {
+                    m.getUsername();
+                }
                 return result;
             } finally {
                 em.close();
             }
         } else {
             return Collections.emptyList();
+        }
+    }
+
+    public Monitored getMonitored(Long id) {
+        User user = getCurrentUser();
+        if (isLoggedIn(user)) {
+            EntityManager em = getEntityManager();
+            try {
+                Monitored monitored = em.getReference(Monitored.class, id);
+                if (user.getEmail().equals(monitored.getBy())) {
+                    return monitored;
+                }
+            } finally {
+                em.close();
+            }
+        }
+        return null;
+    }
+
+    public void addMonitored(Monitored monitored) {
+        User user = getCurrentUser();
+        if (isLoggedIn(user)) {
+            monitored.setBy(user.getEmail());
+            EntityManager em = getEntityManager();
+            try {
+                em.persist(monitored);
+            } finally {
+                em.close();
+            }
+        }
+    }
+
+    public void removeMonitored(Monitored monitored) {
+        User user = getCurrentUser();
+        if (isLoggedIn(user)) {
+            EntityManager em = getEntityManager();
+            try {
+                em.remove(monitored);
+            } finally {
+                em.close();
+            }
         }
     }
 }
