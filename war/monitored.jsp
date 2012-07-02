@@ -75,10 +75,11 @@
 			monitored.setAdded(new Date());
 			monitored.setBy(user.getEmail());
 
-			ps.addMonitored(monitored);
-			monitoreds.add(monitored);
-			Collections.sort(monitoreds);
-			syncCache.put(user.getEmail(), new ArrayList(monitoreds));
+			if (ps.addMonitored(monitored)) {
+				monitoreds.add(monitored);
+				Collections.sort(monitoreds);
+				syncCache.put(user.getEmail(), new ArrayList(monitoreds));
+			}
 		}
 
 		//Delete monitored

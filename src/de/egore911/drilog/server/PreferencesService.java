@@ -70,17 +70,27 @@ public class PreferencesService {
         return null;
     }
 
-    public void addMonitored(Monitored monitored) {
+    public boolean addMonitored(Monitored monitored) {
         User user = getCurrentUser();
         if (isLoggedIn(user)) {
             monitored.setBy(user.getEmail());
             EntityManager em = getEntityManager();
             try {
-                em.persist(monitored);
+                Integer count = (Integer) em
+                        .createQuery("select count() from Monitored where by = :by " +
+                                "and username = :username")
+                        .setParameter("by", user.getEmail())
+                        .setParameter("username", monitored.getUsername())
+                        .getSingleResult();
+                if (count.intValue() == 0) {
+                    em.persist(monitored);
+                    return true;
+                }
             } finally {
                 em.close();
             }
         }
+        return false;
     }
 
     public void removeMonitored(Monitored monitored) {
