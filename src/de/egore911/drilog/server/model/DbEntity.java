@@ -1,8 +1,9 @@
 
 package de.egore911.drilog.server.model;
 
+import java.io.Serializable;
 
-public abstract class DbEntity {
+public abstract class DbEntity implements Serializable {
 
     private static final long serialVersionUID = 6461228766229324468L;
 

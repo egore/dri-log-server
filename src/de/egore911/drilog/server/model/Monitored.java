@@ -9,7 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Monitored extends DbEntity {
+public class Monitored extends DbEntity implements Comparable<Monitored> {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,5 +51,10 @@ public class Monitored extends DbEntity {
 
     public void setBy(String by) {
         this.by = by;
+    }
+
+    @Override
+    public int compareTo(Monitored o) {
+        return this.getUsername().compareTo(o.getUsername());
     }
 }
