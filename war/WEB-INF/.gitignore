@@ -1,3 +1,4 @@
 *.api
 *.discovery
 classes
+appengine-generated
