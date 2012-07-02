@@ -4,7 +4,9 @@ package de.egore911.drilog.server.model;
 
 public abstract class DbEntity {
 
-    public abstract Integer getId();
+    private static final long serialVersionUID = 6461228766229324468L;
+
+    public abstract Long getId();
 
     @Override
     public int hashCode() {
