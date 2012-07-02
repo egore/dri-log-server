@@ -1,15 +1,15 @@
-<%@page import="java.util.Iterator"%>
-<%@page import="java.util.Collections"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.util.ArrayList"%>
+<%@page import="java.util.Collections"%>
+<%@page import="java.util.Date"%>
+<%@page import="java.util.List"%>
 <%@page import="com.google.appengine.api.memcache.MemcacheServiceFactory"%>
 <%@page import="com.google.appengine.api.memcache.MemcacheService"%>
 <%@page import="com.google.appengine.api.users.User"%>
 <%@page import="com.google.appengine.api.users.UserServiceFactory"%>
 <%@page import="com.google.appengine.api.users.UserService"%>
-<%@page import="java.util.Date"%>
-<%@page import="de.egore911.drilog.server.model.Monitored"%>
 <%@page import="de.egore911.drilog.server.PreferencesService"%>
-<%@page import="java.util.List"%>
+<%@page import="de.egore911.drilog.server.model.Monitored"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -95,12 +95,13 @@
 		
 		//List monitoreds
 		if (monitoreds != null && !monitoreds.isEmpty()) {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			out.println ("<table class=\"table table-striped table-bordered table-condensed\" border=\"1\" align=\"center\">");
 			out.println ("<thead><tr><th>Username</th><th>Date added</th><th></th></tr></thead><tbody>");
 			for (Monitored monitored : monitoreds) {
 				out.println("<tr>");
 				out.println("<td>" + monitored.getUsername() + "</td>"
-						+ "<td>"+ monitored.getAdded() + "</td>"
+						+ "<td>"+ format.format(monitored.getAdded()) + "</td>"
 						);
 				out.println("<td><a class=\"btn btn-danger\" href=\"/monitored.jsp?remove="
 						+ monitored.getId() + "\">" +
