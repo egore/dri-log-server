@@ -17,8 +17,20 @@ import javax.persistence.EntityManager;
 @Api(name = "preferences")
 public class PreferencesService {
 
-    private static EntityManager getEntityManager() {
-        return EntityManagerFactoryHolder.getInstance().createEntityManager();
+    private EntityManager created = null;
+
+    private EntityManager getEntityManager() {
+        if (EntityManagerFilter.getEntityManager() != null) {
+            return EntityManagerFilter.getEntityManager();
+        }
+        created = EntityManagerFactoryHolder.getInstance().createEntityManager();
+        return created;
+    }
+
+    private void closeEntitymanager() {
+        if (created != null) {
+            created.close();
+        }
     }
 
     private static boolean isLoggedIn(User user) {
@@ -41,13 +53,15 @@ public class PreferencesService {
                                 "order by username")
                         .setParameter("by", user.getEmail())
                         .getResultList();
-                // XXX Lazy init workaround
-                for (Monitored m : result) {
-                    m.getUsername();
+                if (created != null) {
+                    // XXX Lazy init workaround
+                    for (Monitored m : result) {
+                        m.getUsername();
+                    }
                 }
                 return result;
             } finally {
-                em.close();
+                closeEntitymanager();
             }
         } else {
             return Collections.emptyList();
@@ -64,7 +78,7 @@ public class PreferencesService {
                     return monitored;
                 }
             } finally {
-                em.close();
+                closeEntitymanager();
             }
         }
         return null;
@@ -87,7 +101,7 @@ public class PreferencesService {
                     return true;
                 }
             } finally {
-                em.close();
+                closeEntitymanager();
             }
         }
         return false;
@@ -100,8 +114,9 @@ public class PreferencesService {
             try {
                 em.remove(monitored);
             } finally {
-                em.close();
+                closeEntitymanager();
             }
         }
     }
+
 }
