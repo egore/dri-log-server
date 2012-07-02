@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Monitored {
+public class Monitored extends DbEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,7 @@ public class Monitored {
     private Date added;
     private String by;
 
+    @Override
     public Integer getId() {
         return id;
     }
