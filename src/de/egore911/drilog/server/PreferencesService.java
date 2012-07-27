@@ -6,7 +6,7 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-import de.egore911.drilog.server.model.EntityManagerFactoryHolder;
+import de.egore911.drilog.server.model.EMF;
 import de.egore911.drilog.server.model.Monitored;
 
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class PreferencesService {
         if (EntityManagerFilter.getEntityManager() != null) {
             return EntityManagerFilter.getEntityManager();
         }
-        created = EntityManagerFactoryHolder.getInstance().createEntityManager();
+        created = EMF.get().createEntityManager();
         return created;
     }
 

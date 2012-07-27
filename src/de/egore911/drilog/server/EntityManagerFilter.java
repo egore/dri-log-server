@@ -1,7 +1,7 @@
 
 package de.egore911.drilog.server;
 
-import de.egore911.drilog.server.model.EntityManagerFactoryHolder;
+import de.egore911.drilog.server.model.EMF;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -16,7 +16,7 @@ import javax.servlet.ServletResponse;
 
 public class EntityManagerFilter implements Filter {
 
-    private static final Logger LOG = Logger.getLogger(EntityManagerFactoryHolder.class.getName());
+    private static final Logger LOG = Logger.getLogger(EntityManagerFilter.class.getName());
 
     private static final ThreadLocal<EntityManager> entityManagerHolder = new ThreadLocal<EntityManager>();
 
@@ -34,7 +34,7 @@ public class EntityManagerFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         LOG.finest("Create entitymanager");
-        entityManagerHolder.set(EntityManagerFactoryHolder.getInstance().createEntityManager());
+        entityManagerHolder.set(EMF.get().createEntityManager());
         try {
             chain.doFilter(request, response);
         } finally {

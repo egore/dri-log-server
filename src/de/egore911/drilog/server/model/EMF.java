@@ -4,15 +4,15 @@ package de.egore911.drilog.server.model;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-public final class EntityManagerFactoryHolder {
+public final class EMF {
 
-    private static final EntityManagerFactory emf =
+    private static final EntityManagerFactory emfInstance =
             Persistence.createEntityManagerFactory("transactions-optional");
 
-    private EntityManagerFactoryHolder() {
+    private EMF() {
     }
 
-    public static EntityManagerFactory getInstance() {
-        return emf;
+    public static EntityManagerFactory get() {
+        return emfInstance;
     }
 }
