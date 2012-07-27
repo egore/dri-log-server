@@ -8,7 +8,7 @@
 <%@page import="com.google.appengine.api.users.User"%>
 <%@page import="com.google.appengine.api.users.UserServiceFactory"%>
 <%@page import="com.google.appengine.api.users.UserService"%>
-<%@page import="de.egore911.drilog.server.PreferencesService"%>
+<%@page import="de.egore911.drilog.server.MonitoredEndpoint"%>
 <%@page import="de.egore911.drilog.server.model.Monitored"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
@@ -60,10 +60,10 @@
 		List<Monitored> monitoreds = (List<Monitored>) syncCache.get(user.getEmail());
 
 
-		PreferencesService ps = new PreferencesService();
+		MonitoredEndpoint ps = new MonitoredEndpoint();
 
 		if (monitoreds == null) {
-			monitoreds = ps.getMonitoreds();
+			monitoreds = ps.listMonitored();
 			syncCache.put(user.getEmail(), new ArrayList(monitoreds));
 		}
 
@@ -75,7 +75,7 @@
 			monitored.setAdded(new Date());
 			monitored.setBy(user.getEmail());
 
-			if (ps.addMonitored(monitored)) {
+			if (ps.insertMonitored(monitored) != null) {
 				monitoreds.add(monitored);
 				Collections.sort(monitoreds);
 				syncCache.put(user.getEmail(), new ArrayList(monitoreds));
@@ -85,9 +85,8 @@
 		//Delete monitored
 		String remove = request.getParameter("remove");
 		if (remove != null && !remove.isEmpty()) {
-			Monitored monitored = ps.getMonitored(Long.parseLong(remove));
+			Monitored monitored = ps.removeMonitored(Long.parseLong(remove));
 			if (monitored != null) {
-				ps.removeMonitored(monitored);
 				monitoreds.remove(monitored);
 			}
 			syncCache.put(user.getEmail(), new ArrayList(monitoreds));
